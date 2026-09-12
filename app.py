@@ -667,6 +667,928 @@
 
 
 
+# import streamlit as st
+# from urllib.parse import urlparse
+# from phishguard_engine import analyze_url
+
+
+# # ============================================================
+# # PAGE CONFIG
+# # ============================================================
+
+# st.set_page_config(
+#     page_title="PhishGuard | AI URL Security",
+#     page_icon="🛡️",
+#     layout="wide",
+#     initial_sidebar_state="expanded",
+# )
+
+
+# # ============================================================
+# # CUSTOM CSS
+# # ============================================================
+
+# st.markdown(
+#     """
+#     <style>
+#     .stApp {
+#         background:
+#             radial-gradient(circle at 15% 10%, rgba(70, 90, 140, 0.12), transparent 30%),
+#             radial-gradient(circle at 85% 15%, rgba(120, 70, 150, 0.10), transparent 30%),
+#             #080b12;
+#         color: #e8edf5;
+#     }
+
+#     .block-container {
+#         max-width: 1250px;
+#         padding-top: 2rem;
+#         padding-bottom: 3rem;
+#     }
+
+#     /* Header */
+#     .hero {
+#         padding: 2rem 0 1.2rem 0;
+#     }
+
+#     .hero-badge {
+#         display: inline-block;
+#         padding: 0.35rem 0.75rem;
+#         border: 1px solid rgba(120, 140, 180, 0.25);
+#         border-radius: 999px;
+#         background: rgba(255,255,255,0.035);
+#         color: #aebbd0;
+#         font-size: 0.78rem;
+#         letter-spacing: 0.08em;
+#         text-transform: uppercase;
+#         margin-bottom: 0.9rem;
+#     }
+
+#     .hero h1 {
+#         font-size: 3.2rem;
+#         line-height: 1.05;
+#         margin: 0;
+#         font-weight: 800;
+#         letter-spacing: -0.04em;
+#     }
+
+#     .hero h1 span {
+#         color: #79a8ff;
+#     }
+
+#     .hero p {
+#         color: #9ba8bc;
+#         font-size: 1.05rem;
+#         max-width: 780px;
+#         margin-top: 0.8rem;
+#         line-height: 1.65;
+#     }
+
+#     /* Cards */
+#     .card {
+#         background: rgba(17, 22, 32, 0.78);
+#         border: 1px solid rgba(130, 145, 170, 0.16);
+#         border-radius: 16px;
+#         padding: 1.2rem;
+#         margin-bottom: 1rem;
+#         box-shadow: 0 12px 35px rgba(0,0,0,0.18);
+#     }
+
+#     .card-title {
+#         font-size: 0.82rem;
+#         color: #8f9caf;
+#         text-transform: uppercase;
+#         letter-spacing: 0.08em;
+#         margin-bottom: 0.55rem;
+#     }
+
+#     .card-value {
+#         font-size: 1.7rem;
+#         font-weight: 750;
+#         color: #f0f4fa;
+#     }
+
+#     .card-sub {
+#         color: #7f8b9d;
+#         font-size: 0.82rem;
+#         margin-top: 0.25rem;
+#     }
+
+#     /* Assessment */
+#     .assessment {
+#         padding: 1.35rem 1.5rem;
+#         border-radius: 16px;
+#         background: linear-gradient(
+#             135deg,
+#             rgba(30, 40, 58, 0.95),
+#             rgba(15, 20, 30, 0.95)
+#         );
+#         border: 1px solid rgba(120, 145, 190, 0.2);
+#         margin: 1.25rem 0 1.5rem 0;
+#     }
+
+#     .assessment-label {
+#         color: #8f9caf;
+#         text-transform: uppercase;
+#         letter-spacing: 0.08em;
+#         font-size: 0.75rem;
+#     }
+
+#     .assessment-verdict {
+#         font-size: 2rem;
+#         font-weight: 800;
+#         margin-top: 0.25rem;
+#     }
+
+#     .assessment-description {
+#         color: #a5b0c0;
+#         margin-top: 0.4rem;
+#     }
+
+#     /* Section */
+#     .section-header {
+#         margin-top: 1.8rem;
+#         margin-bottom: 0.8rem;
+#     }
+
+#     .section-header h2 {
+#         font-size: 1.35rem;
+#         margin-bottom: 0.15rem;
+#     }
+
+#     .section-header p {
+#         color: #7f8b9d;
+#         margin-top: 0;
+#         font-size: 0.9rem;
+#     }
+
+#     /* Findings */
+#     .finding {
+#         padding: 0.9rem 1rem;
+#         border-radius: 12px;
+#         background: rgba(255,255,255,0.025);
+#         border: 1px solid rgba(255,255,255,0.07);
+#         margin-bottom: 0.6rem;
+#     }
+
+#     .finding-title {
+#         font-weight: 650;
+#     }
+
+#     .finding-desc {
+#         color: #8e9bad;
+#         font-size: 0.84rem;
+#         margin-top: 0.2rem;
+#     }
+
+#     /* Pills */
+#     .pill {
+#         display: inline-block;
+#         padding: 0.35rem 0.65rem;
+#         margin: 0.2rem;
+#         border-radius: 999px;
+#         background: rgba(121, 168, 255, 0.10);
+#         border: 1px solid rgba(121, 168, 255, 0.18);
+#         color: #b9d0ff;
+#         font-size: 0.8rem;
+#     }
+
+#     /* URL box */
+#     .url-box {
+#         background: #0d121b;
+#         border: 1px solid rgba(130,145,170,0.16);
+#         border-radius: 12px;
+#         padding: 0.85rem 1rem;
+#         color: #b9c5d7;
+#         word-break: break-all;
+#         font-family: monospace;
+#         font-size: 0.86rem;
+#     }
+
+#     /* Sidebar */
+#     [data-testid="stSidebar"] {
+#         background: #090d14;
+#         border-right: 1px solid rgba(130,145,170,0.12);
+#     }
+
+#     /* Buttons */
+#     .stButton > button {
+#         border-radius: 10px;
+#         font-weight: 650;
+#     }
+
+#     /* Footer */
+#     .footer {
+#         text-align: center;
+#         color: #667286;
+#         font-size: 0.78rem;
+#         padding-top: 2.5rem;
+#         line-height: 1.7;
+#     }
+
+#     /* Hide Streamlit branding */
+#     #MainMenu {
+#         visibility: hidden;
+#     }
+
+#     footer {
+#         visibility: hidden;
+#     }
+
+#     header {
+#         visibility: hidden;
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+
+# # ============================================================
+# # SIDEBAR
+# # ============================================================
+
+# with st.sidebar:
+
+#     st.markdown("## 🛡️ PhishGuard")
+
+#     st.caption(
+#         "AI-assisted phishing URL analysis"
+#     )
+
+#     st.divider()
+
+#     st.markdown("### Detection Stack")
+
+#     st.markdown(
+#         """
+#         **01 · ML Pattern Model**  
+#         Character-level URL analysis
+
+#         **02 · Structure Engine**  
+#         URL and domain red flags
+
+#         **03 · Brand Intelligence**  
+#         Known-brand impersonation
+
+#         **04 · Typosquatting Engine**  
+#         Lookalike & leetspeak detection
+
+#         **05 · Threat Fusion**  
+#         Combined security assessment
+#         """
+#     )
+
+#     st.divider()
+
+#     st.markdown("### Privacy")
+
+#     st.caption(
+#         "PhishGuard analyzes the URL string locally "
+#         "within the application. It does not visit "
+#         "or download content from the submitted website."
+#     )
+
+#     st.divider()
+
+#     st.caption(
+#         "Built as a machine-learning security research project."
+#     )
+
+
+# # ============================================================
+# # HERO
+# # ============================================================
+
+# st.markdown(
+#     """
+#     <div class="hero">
+#         <div class="hero-badge">AI-Assisted URL Security</div>
+#         <h1>Phish<span>Guard</span></h1>
+#         <p>
+#             Analyze suspicious URLs using machine-learning patterns,
+#             structural security heuristics, brand impersonation and
+#             typosquatting intelligence — without relying on external
+#             threat-intelligence APIs.
+#         </p>
+#     </div>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+
+# # ============================================================
+# # HOW IT WORKS
+# # ============================================================
+
+# with st.expander("🧭 How to use PhishGuard", expanded=False):
+
+#     st.markdown(
+#         """
+#         ### Scan a URL in three steps
+
+#         **1. Paste a URL**  
+#         Enter the complete URL you want to analyze.
+
+#         **2. Run the security scan**  
+#         PhishGuard evaluates the URL using multiple independent
+#         detection layers.
+
+#         **3. Review the evidence**  
+#         Don't rely only on the final score. Check the detected
+#         structural indicators, suspicious keywords, brand
+#         impersonation and possible typosquatting.
+
+#         **Example URLs**
+#         """
+#     )
+
+#     demo_urls = [
+#         "https://google.com",
+#         "https://github.com/login",
+#         "https://goggle.com",
+#         "https://paypa1.com",
+#         "http://paypal-login-verify.com",
+#         "http://192.168.1.100/login",
+#     ]
+
+#     for demo in demo_urls:
+#         st.code(demo)
+
+
+# # ============================================================
+# # INPUT
+# # ============================================================
+
+# st.markdown(
+#     """
+#     <div class="section-header">
+#         <h2>🔎 URL Security Scanner</h2>
+#         <p>Paste a URL to generate a multi-layer threat assessment.</p>
+#     </div>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+# url = st.text_input(
+#     "URL",
+#     placeholder="https://example.com/login",
+#     label_visibility="collapsed",
+# )
+
+# scan = st.button(
+#     "🔍 Analyze URL",
+#     type="primary",
+#     use_container_width=True,
+# )
+
+
+# # ============================================================
+# # ANALYSIS
+# # ============================================================
+
+# if scan:
+
+#     if not url.strip():
+
+#         st.warning(
+#             "Please enter a URL before starting the scan."
+#         )
+#         st.stop()
+
+#     url = url.strip()
+
+#     # Automatically add scheme when omitted.
+#     analysis_url = url
+
+#     if not analysis_url.lower().startswith(
+#         ("http://", "https://")
+#     ):
+#         analysis_url = "https://" + analysis_url
+
+#     try:
+#         result = analyze_url(analysis_url)
+
+#     except Exception as error:
+
+#         st.error(
+#             f"Unable to analyze this URL: {error}"
+#         )
+#         st.stop()
+
+#     verdict = result["verdict"]
+#     score = result["score"]
+#     ml_score = result["ml_score"]
+#     intelligence = result["intelligence_score"]
+
+#     # ========================================================
+#     # ASSESSMENT DESCRIPTION
+#     # ========================================================
+
+#     if verdict == "Verified Low Risk":
+
+#         description = (
+#             "The domain matches a known official domain in "
+#             "PhishGuard's brand verification list."
+#         )
+
+#     elif verdict == "High Risk":
+
+#         description = (
+#             "Multiple signals indicate that this URL may "
+#             "represent a phishing or deceptive destination."
+#         )
+
+#     elif verdict == "Suspicious":
+
+#         description = (
+#             "The URL contains signals associated with "
+#             "potentially deceptive or suspicious behavior."
+#         )
+
+#     else:
+
+#         description = (
+#             "No strong phishing indicators were detected, "
+#             "but this does not guarantee the website is safe."
+#         )
+
+#     # ========================================================
+#     # THREAT ASSESSMENT
+#     # ========================================================
+
+#     st.markdown(
+#         f"""
+#         <div class="assessment">
+#             <div class="assessment-label">Threat Assessment</div>
+#             <div class="assessment-verdict">{verdict}</div>
+#             <div class="assessment-description">
+#                 {description}
+#             </div>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     # ========================================================
+#     # SCORE CARDS
+#     # ========================================================
+
+#     c1, c2, c3, c4 = st.columns(4)
+
+#     with c1:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Threat Score</div>
+#                 <div class="card-value">{score:.1f}/100</div>
+#                 <div class="card-sub">Final fused assessment</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with c2:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">ML Score</div>
+#                 <div class="card-value">{ml_score:.1f}%</div>
+#                 <div class="card-sub">URL pattern probability</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with c3:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Intelligence</div>
+#                 <div class="card-value">{intelligence}/100</div>
+#                 <div class="card-sub">Security heuristics</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with c4:
+
+#         if result["trusted_domain"]:
+#             domain_status = "Recognized"
+#         else:
+#             domain_status = "Unverified"
+
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Domain Status</div>
+#                 <div class="card-value">{domain_status}</div>
+#                 <div class="card-sub">Brand verification layer</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     # ========================================================
+#     # URL
+#     # ========================================================
+
+#     st.markdown(
+#         """
+#         <div class="section-header">
+#             <h2>🌐 Scanned URL</h2>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     st.markdown(
+#         f"""
+#         <div class="url-box">{analysis_url}</div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     # ========================================================
+#     # URL ANATOMY
+#     # ========================================================
+
+#     parsed = urlparse(analysis_url)
+
+#     st.markdown(
+#         """
+#         <div class="section-header">
+#             <h2>🧩 URL Anatomy</h2>
+#             <p>Breakdown of the submitted address.</p>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     a1, a2, a3, a4 = st.columns(4)
+
+#     with a1:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Scheme</div>
+#                 <div class="card-value">{parsed.scheme or "—"}</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with a2:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Hostname</div>
+#                 <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
+#                     {parsed.hostname or "—"}
+#                 </div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with a3:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Path</div>
+#                 <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
+#                     {parsed.path or "/"}
+#                 </div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     with a4:
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 <div class="card-title">Query</div>
+#                 <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
+#                     {parsed.query or "—"}
+#                 </div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     # ========================================================
+#     # BRAND INTELLIGENCE
+#     # ========================================================
+
+#     brands = result["brand_impersonation"]
+#     typos = result["typosquatting"]
+
+#     st.markdown(
+#         """
+#         <div class="section-header">
+#             <h2>🎯 Brand & Typosquatting Intelligence</h2>
+#             <p>
+#                 Detects attempts to imitate known brands through
+#                 deceptive domains and character substitutions.
+#             </p>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     b1, b2 = st.columns(2)
+
+#     with b1:
+
+#         if brands:
+
+#             st.markdown(
+#                 """
+#                 <div class="card">
+#                     <div class="card-title">Brand Impersonation</div>
+#                 """,
+#                 unsafe_allow_html=True,
+#             )
+
+#             for brand in brands:
+#                 st.markdown(
+#                     f'<span class="pill">🚨 {brand}</span>',
+#                     unsafe_allow_html=True,
+#                 )
+
+#             st.markdown("</div>", unsafe_allow_html=True)
+
+#         else:
+
+#             st.markdown(
+#                 """
+#                 <div class="card">
+#                     <div class="card-title">Brand Impersonation</div>
+#                     <div class="card-value">None detected</div>
+#                     <div class="card-sub">
+#                         No known brand was directly detected in the domain.
+#                     </div>
+#                 </div>
+#                 """,
+#                 unsafe_allow_html=True,
+#             )
+
+#     with b2:
+
+#         if typos:
+
+#             st.markdown(
+#                 """
+#                 <div class="card">
+#                     <div class="card-title">Possible Typosquatting</div>
+#                 """,
+#                 unsafe_allow_html=True,
+#             )
+
+#             for item in typos[:5]:
+
+#                 st.markdown(
+#                     f"""
+#                     <div style="margin-bottom:0.65rem;">
+#                         <strong>⚠️ {item['brand']}</strong>
+#                         <span style="color:#8f9caf;">
+#                             — "{item['domain']}"
+#                             ({item['similarity']}% similarity)
+#                         </span>
+#                     </div>
+#                     """,
+#                     unsafe_allow_html=True,
+#                 )
+
+#             st.markdown("</div>", unsafe_allow_html=True)
+
+#         else:
+
+#             st.markdown(
+#                 """
+#                 <div class="card">
+#                     <div class="card-title">Possible Typosquatting</div>
+#                     <div class="card-value">None detected</div>
+#                     <div class="card-sub">
+#                         No strong known-brand lookalike was identified.
+#                     </div>
+#                 </div>
+#                 """,
+#                 unsafe_allow_html=True,
+#             )
+
+#     # ========================================================
+#     # SUSPICIOUS KEYWORDS
+#     # ========================================================
+
+#     keywords = result["suspicious_keywords"]
+
+#     st.markdown(
+#         """
+#         <div class="section-header">
+#             <h2>🔑 Suspicious Keywords</h2>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     if keywords:
+
+#         pills = ""
+
+#         for keyword in keywords:
+#             pills += (
+#                 f'<span class="pill">⚠️ {keyword}</span>'
+#             )
+
+#         st.markdown(
+#             f"""
+#             <div class="card">
+#                 {pills}
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     else:
+
+#         st.markdown(
+#             """
+#             <div class="card">
+#                 <div class="card-value">No suspicious keywords detected</div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     # ========================================================
+#     # STRUCTURAL ANALYSIS
+#     # ========================================================
+
+#     findings = result["security_findings"]
+
+#     st.markdown(
+#         """
+#         <div class="section-header">
+#             <h2>🔬 Structural Analysis</h2>
+#             <p>Signals identified from the URL structure itself.</p>
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+#     for icon, title, description in findings:
+
+#         st.markdown(
+#             f"""
+#             <div class="finding">
+#                 <div class="finding-title">
+#                     {icon} {title}
+#                 </div>
+#                 <div class="finding-desc">
+#                     {description}
+#                 </div>
+#             </div>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#     # ========================================================
+#     # WHY THIS SCORE?
+#     # ========================================================
+
+#     with st.expander(
+#         "🧠 Why did PhishGuard give this score?"
+#     ):
+
+#         st.markdown(
+#             "### Detection reasoning"
+#         )
+
+#         reasons = result["intelligence_reasons"]
+
+#         if reasons:
+
+#             for reason in reasons:
+#                 st.markdown(
+#                     f"- **{reason}**"
+#                 )
+
+#         else:
+
+#             st.markdown(
+#                 "No additional deterministic intelligence signals."
+#             )
+
+#         st.divider()
+
+#         st.markdown(
+#             """
+#             **How the final assessment works**
+
+#             PhishGuard combines several independent signals:
+
+#             **ML Pattern Model**  
+#             A character-level TF-IDF + Logistic Regression model
+#             learns suspicious URL patterns from the training dataset.
+
+#             **Security Intelligence**  
+#             Handcrafted rules examine structural properties such as
+#             IP addresses, excessive subdomains, unusual numbers,
+#             suspicious keywords and URL obfuscation.
+
+#             **Brand / Typosquatting Intelligence**  
+#             The engine compares domains against a curated list of
+#             known brands and checks for lookalike character patterns.
+
+#             These signals are fused into the final threat assessment.
+#             """
+#         )
+
+#     # ========================================================
+#     # LIMITATIONS
+#     # ========================================================
+
+#     with st.expander(
+#         "⚠️ Limitations & responsible use"
+#     ):
+
+#         st.markdown(
+#             """
+#             ### Important
+
+#             PhishGuard is an **ML-based research and educational
+#             security tool**, not a replacement for a commercial
+#             threat-intelligence platform.
+
+#             **What it can do**
+#             - Detect learned URL patterns associated with phishing.
+#             - Identify common structural red flags.
+#             - Detect known-brand impersonation.
+#             - Identify many common typosquatting techniques.
+#             - Explain the signals contributing to its assessment.
+
+#             **What it cannot guarantee**
+#             - It does not verify whether a website is currently online.
+#             - It does not inspect the website's HTML or JavaScript.
+#             - It does not query live domain reputation databases.
+#             - It does not guarantee that a "Low Risk" URL is safe.
+#             - Novel phishing domains without recognizable signals may
+#               evade detection.
+#             - The trusted-domain layer only covers brands in its
+#               curated verification list.
+
+#             **Best practice:** treat the result as one security signal,
+#             not as proof that a website is safe or malicious.
+#             """
+#         )
+
+#     # ========================================================
+#     # FOOTER
+#     # ========================================================
+
+#     st.markdown(
+#         """
+#         <div class="footer">
+#             <strong>PhishGuard</strong> · AI-Assisted Phishing URL Detection<br>
+#             Machine Learning · Security Heuristics · Brand Intelligence · Explainability
+#         </div>
+#         """,
+#         unsafe_allow_html=True,
+#     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import streamlit as st
 from urllib.parse import urlparse
 from phishguard_engine import analyze_url
@@ -685,218 +1607,385 @@ st.set_page_config(
 
 
 # ============================================================
+# SESSION STATE
+# ============================================================
+
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+if "url_input" not in st.session_state:
+    st.session_state.url_input = ""
+
+
+# ============================================================
+# THEME
+# ============================================================
+
+dark_mode = st.session_state.theme == "dark"
+
+if dark_mode:
+    BG = "#080b12"
+    PANEL = "rgba(17, 22, 32, 0.82)"
+    PANEL_SOLID = "#111620"
+    TEXT = "#e8edf5"
+    MUTED = "#9ba8bc"
+    SUBTLE = "#7f8b9d"
+    BORDER = "rgba(130, 145, 170, 0.16)"
+    INPUT = "#20232d"
+    CODE_BG = "#0d121b"
+    ACCENT = "#79a8ff"
+else:
+    BG = "#f5f7fb"
+    PANEL = "rgba(255, 255, 255, 0.88)"
+    PANEL_SOLID = "#ffffff"
+    TEXT = "#172033"
+    MUTED = "#536176"
+    SUBTLE = "#718096"
+    BORDER = "rgba(40, 55, 80, 0.14)"
+    INPUT = "#ffffff"
+    CODE_BG = "#eef2f7"
+    ACCENT = "#356edb"
+
+
+# ============================================================
 # CUSTOM CSS
 # ============================================================
 
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp {
+
+    :root {{
+        --bg: {BG};
+        --panel: {PANEL};
+        --panel-solid: {PANEL_SOLID};
+        --text: {TEXT};
+        --muted: {MUTED};
+        --subtle: {SUBTLE};
+        --border: {BORDER};
+        --input: {INPUT};
+        --code-bg: {CODE_BG};
+        --accent: {ACCENT};
+    }}
+
+    .stApp {{
         background:
-            radial-gradient(circle at 15% 10%, rgba(70, 90, 140, 0.12), transparent 30%),
-            radial-gradient(circle at 85% 15%, rgba(120, 70, 150, 0.10), transparent 30%),
-            #080b12;
-        color: #e8edf5;
-    }
+            radial-gradient(
+                circle at 15% 8%,
+                rgba(70, 100, 170, 0.10),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 85% 12%,
+                rgba(120, 70, 170, 0.08),
+                transparent 30%
+            ),
+            var(--bg);
 
-    .block-container {
-        max-width: 1250px;
-        padding-top: 2rem;
+        color: var(--text);
+    }}
+
+    .block-container {{
+        max-width: 1280px;
+        padding-top: 2.2rem;
         padding-bottom: 3rem;
-    }
+    }}
 
-    /* Header */
-    .hero {
-        padding: 2rem 0 1.2rem 0;
-    }
+    /* ========================================================
+       SIDEBAR
+       ======================================================== */
 
-    .hero-badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border: 1px solid rgba(120, 140, 180, 0.25);
-        border-radius: 999px;
-        background: rgba(255,255,255,0.035);
-        color: #aebbd0;
-        font-size: 0.78rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        margin-bottom: 0.9rem;
-    }
+    [data-testid="stSidebar"] {{
+        background: var(--panel-solid);
+        border-right: 1px solid var(--border);
+    }}
 
-    .hero h1 {
-        font-size: 3.2rem;
-        line-height: 1.05;
-        margin: 0;
+    .sidebar-brand {{
+        text-align: center;
+        padding: 1rem 0 1.4rem 0;
+    }}
+
+    .sidebar-brand-icon {{
+        font-size: 2.2rem;
+    }}
+
+    .sidebar-brand-name {{
+        font-size: 1.45rem;
         font-weight: 800;
-        letter-spacing: -0.04em;
-    }
+        margin-top: 0.3rem;
+    }}
 
-    .hero h1 span {
-        color: #79a8ff;
-    }
+    .sidebar-subtitle {{
+        color: var(--subtle);
+        font-size: 0.78rem;
+        margin-top: 0.3rem;
+    }}
 
-    .hero p {
-        color: #9ba8bc;
-        font-size: 1.05rem;
-        max-width: 780px;
-        margin-top: 0.8rem;
-        line-height: 1.65;
-    }
+    .sidebar-section {{
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--subtle);
+        margin: 1.3rem 0 0.7rem 0;
+    }}
 
-    /* Cards */
-    .card {
-        background: rgba(17, 22, 32, 0.78);
-        border: 1px solid rgba(130, 145, 170, 0.16);
+    .stack-item {{
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--border);
+    }}
+
+    .stack-number {{
+        color: var(--accent);
+        font-weight: 800;
+        font-size: 0.75rem;
+    }}
+
+    .stack-title {{
+        font-weight: 700;
+        margin-left: 0.35rem;
+    }}
+
+    .stack-desc {{
+        color: var(--subtle);
+        font-size: 0.76rem;
+        margin-top: 0.15rem;
+    }}
+
+    /* ========================================================
+       HERO
+       ======================================================== */
+
+    .hero {{
+        text-align: center;
+        padding: 1.1rem 0 1rem 0;
+    }}
+
+    .hero-badge {{
+        display: inline-block;
+        padding: 0.4rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(121, 168, 255, 0.05);
+        color: var(--muted);
+        font-size: 0.74rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }}
+
+    .hero h1 {{
+        font-size: 4.1rem;
+        line-height: 1;
+        margin: 1.1rem 0 0.8rem 0;
+        font-weight: 850;
+        letter-spacing: -0.055em;
+        color: var(--text);
+    }}
+
+    .hero h1 span {{
+        color: var(--accent);
+    }}
+
+    .hero p {{
+        color: var(--muted);
+        font-size: 1.02rem;
+        max-width: 820px;
+        margin: auto;
+        line-height: 1.7;
+    }}
+
+    /* ========================================================
+       CARDS
+       ======================================================== */
+
+    .card {{
+        background: var(--panel);
+        border: 1px solid var(--border);
         border-radius: 16px;
-        padding: 1.2rem;
+        padding: 1.15rem;
         margin-bottom: 1rem;
-        box-shadow: 0 12px 35px rgba(0,0,0,0.18);
-    }
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+    }}
 
-    .card-title {
-        font-size: 0.82rem;
-        color: #8f9caf;
+    .card-title {{
+        font-size: 0.74rem;
+        color: var(--subtle);
         text-transform: uppercase;
         letter-spacing: 0.08em;
         margin-bottom: 0.55rem;
-    }
+    }}
 
-    .card-value {
-        font-size: 1.7rem;
-        font-weight: 750;
-        color: #f0f4fa;
-    }
+    .card-value {{
+        font-size: 1.55rem;
+        font-weight: 780;
+        color: var(--text);
+    }}
 
-    .card-sub {
-        color: #7f8b9d;
-        font-size: 0.82rem;
+    .card-sub {{
+        color: var(--subtle);
+        font-size: 0.78rem;
         margin-top: 0.25rem;
-    }
+    }}
 
-    /* Assessment */
-    .assessment {
-        padding: 1.35rem 1.5rem;
-        border-radius: 16px;
-        background: linear-gradient(
-            135deg,
-            rgba(30, 40, 58, 0.95),
-            rgba(15, 20, 30, 0.95)
-        );
-        border: 1px solid rgba(120, 145, 190, 0.2);
-        margin: 1.25rem 0 1.5rem 0;
-    }
+    /* ========================================================
+       SECTION HEADERS
+       ======================================================== */
 
-    .assessment-label {
-        color: #8f9caf;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.75rem;
-    }
-
-    .assessment-verdict {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-top: 0.25rem;
-    }
-
-    .assessment-description {
-        color: #a5b0c0;
-        margin-top: 0.4rem;
-    }
-
-    /* Section */
-    .section-header {
-        margin-top: 1.8rem;
+    .section-header {{
+        margin-top: 2rem;
         margin-bottom: 0.8rem;
-    }
+    }}
 
-    .section-header h2 {
-        font-size: 1.35rem;
+    .section-header h2 {{
+        font-size: 1.3rem;
         margin-bottom: 0.15rem;
-    }
+        color: var(--text);
+    }}
 
-    .section-header p {
-        color: #7f8b9d;
+    .section-header p {{
+        color: var(--subtle);
         margin-top: 0;
+        font-size: 0.86rem;
+    }}
+
+    /* ========================================================
+       ASSESSMENT
+       ======================================================== */
+
+    .assessment {{
+        padding: 1.4rem 1.5rem;
+        border-radius: 17px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        margin: 1.5rem 0;
+        text-align: center;
+    }}
+
+    .assessment-label {{
+        color: var(--subtle);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-size: 0.72rem;
+    }}
+
+    .assessment-verdict {{
+        font-size: 2.15rem;
+        font-weight: 850;
+        margin-top: 0.25rem;
+        color: var(--text);
+    }}
+
+    .assessment-description {{
+        color: var(--muted);
+        margin-top: 0.4rem;
         font-size: 0.9rem;
-    }
+    }}
 
-    /* Findings */
-    .finding {
-        padding: 0.9rem 1rem;
+    /* ========================================================
+       FINDINGS
+       ======================================================== */
+
+    .finding {{
+        padding: 0.85rem 1rem;
         border-radius: 12px;
-        background: rgba(255,255,255,0.025);
-        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(128, 145, 175, 0.035);
+        border: 1px solid var(--border);
         margin-bottom: 0.6rem;
-    }
+    }}
 
-    .finding-title {
-        font-weight: 650;
-    }
+    .finding-title {{
+        font-weight: 680;
+        color: var(--text);
+    }}
 
-    .finding-desc {
-        color: #8e9bad;
-        font-size: 0.84rem;
+    .finding-desc {{
+        color: var(--subtle);
+        font-size: 0.82rem;
         margin-top: 0.2rem;
-    }
+    }}
 
-    /* Pills */
-    .pill {
+    /* ========================================================
+       PILLS
+       ======================================================== */
+
+    .pill {{
         display: inline-block;
-        padding: 0.35rem 0.65rem;
-        margin: 0.2rem;
+        padding: 0.34rem 0.62rem;
+        margin: 0.18rem;
         border-radius: 999px;
-        background: rgba(121, 168, 255, 0.10);
+        background: rgba(121, 168, 255, 0.09);
         border: 1px solid rgba(121, 168, 255, 0.18);
-        color: #b9d0ff;
-        font-size: 0.8rem;
-    }
+        color: var(--accent);
+        font-size: 0.78rem;
+    }}
 
-    /* URL box */
-    .url-box {
-        background: #0d121b;
-        border: 1px solid rgba(130,145,170,0.16);
+    /* ========================================================
+       URL BOX
+       ======================================================== */
+
+    .url-box {{
+        background: var(--code-bg);
+        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 0.85rem 1rem;
-        color: #b9c5d7;
+        color: var(--muted);
         word-break: break-all;
         font-family: monospace;
-        font-size: 0.86rem;
-    }
+        font-size: 0.84rem;
+    }}
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background: #090d14;
-        border-right: 1px solid rgba(130,145,170,0.12);
-    }
+    /* ========================================================
+       EMPTY STATE
+       ======================================================== */
 
-    /* Buttons */
-    .stButton > button {
-        border-radius: 10px;
-        font-weight: 650;
-    }
-
-    /* Footer */
-    .footer {
+    .empty-state {{
         text-align: center;
-        color: #667286;
-        font-size: 0.78rem;
+        padding: 2rem 1rem;
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        margin-top: 1.2rem;
+        color: var(--subtle);
+    }}
+
+    .empty-icon {{
+        font-size: 2.2rem;
+    }}
+
+    .empty-title {{
+        color: var(--text);
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }}
+
+    /* ========================================================
+       FOOTER
+       ======================================================== */
+
+    .footer {{
+        text-align: center;
+        color: var(--subtle);
+        font-size: 0.74rem;
         padding-top: 2.5rem;
         line-height: 1.7;
-    }
+    }}
 
-    /* Hide Streamlit branding */
-    #MainMenu {
-        visibility: hidden;
-    }
+    /* ========================================================
+       STREAMLIT CLEANUP
+       ======================================================== */
 
-    footer {
+    #MainMenu {{
         visibility: hidden;
-    }
+    }}
 
-    header {
+    footer {{
         visibility: hidden;
-    }
+    }}
+
+    /* IMPORTANT:
+       Do NOT hide Streamlit's header.
+       The sidebar open/close control lives there.
+    */
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -909,49 +1998,91 @@ st.markdown(
 
 with st.sidebar:
 
-    st.markdown("## 🛡️ PhishGuard")
-
-    st.caption(
-        "AI-assisted phishing URL analysis"
-    )
-
-    st.divider()
-
-    st.markdown("### Detection Stack")
-
     st.markdown(
         """
-        **01 · ML Pattern Model**  
-        Character-level URL analysis
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">🛡️</div>
+            <div class="sidebar-brand-name">PhishGuard</div>
+            <div class="sidebar-subtitle">
+                AI-assisted phishing URL analysis
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        **02 · Structure Engine**  
-        URL and domain red flags
+    # Theme toggle
+    if st.button(
+        "☀️ Light Mode" if dark_mode else "🌙 Dark Mode",
+        use_container_width=True,
+    ):
+        st.session_state.theme = (
+            "light" if dark_mode else "dark"
+        )
+        st.rerun()
 
-        **03 · Brand Intelligence**  
-        Known-brand impersonation
+    st.divider()
 
-        **04 · Typosquatting Engine**  
-        Lookalike & leetspeak detection
+    st.markdown(
+        '<div class="sidebar-section">Detection Stack</div>',
+        unsafe_allow_html=True,
+    )
 
-        **05 · Threat Fusion**  
-        Combined security assessment
-        """
+    stack = [
+        (
+            "01",
+            "ML Pattern Model",
+            "Character-level URL analysis",
+        ),
+        (
+            "02",
+            "Structure Engine",
+            "URL and domain red flags",
+        ),
+        (
+            "03",
+            "Brand Intelligence",
+            "Known-brand impersonation",
+        ),
+        (
+            "04",
+            "Typosquatting Engine",
+            "Lookalike & leetspeak detection",
+        ),
+        (
+            "05",
+            "Threat Fusion",
+            "Combined security assessment",
+        ),
+    ]
+
+    for number, title, description in stack:
+
+        st.markdown(
+            f"""
+            <div class="stack-item">
+                <span class="stack-number">{number}</span>
+                <span class="stack-title">{title}</span>
+                <div class="stack-desc">{description}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        '<div class="sidebar-section">Privacy</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.caption(
+        "PhishGuard analyzes the URL string without "
+        "visiting or downloading the target website."
     )
 
     st.divider()
 
-    st.markdown("### Privacy")
-
     st.caption(
-        "PhishGuard analyzes the URL string locally "
-        "within the application. It does not visit "
-        "or download content from the submitted website."
-    )
-
-    st.divider()
-
-    st.caption(
-        "Built as a machine-learning security research project."
+        "ML security research project · No external threat-intelligence API"
     )
 
 
@@ -962,13 +2093,68 @@ with st.sidebar:
 st.markdown(
     """
     <div class="hero">
-        <div class="hero-badge">AI-Assisted URL Security</div>
-        <h1>Phish<span>Guard</span></h1>
+
+        <div class="hero-badge">
+            AI-ASSISTED URL SECURITY
+        </div>
+
+        <h1>
+            Phish<span>Guard</span>
+        </h1>
+
         <p>
             Analyze suspicious URLs using machine-learning patterns,
             structural security heuristics, brand impersonation and
-            typosquatting intelligence — without relying on external
-            threat-intelligence APIs.
+            typosquatting intelligence — all without relying on
+            external threat-intelligence APIs.
+        </p>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# HOW TO USE
+# ============================================================
+
+with st.expander(
+    "🧭 How to use PhishGuard",
+    expanded=False,
+):
+
+    st.markdown(
+        """
+        ### Scan a URL in three steps
+
+        **1. Paste a URL**  
+        Enter the complete URL you want to investigate.
+
+        **2. Start the scan**  
+        PhishGuard runs the URL through multiple detection layers.
+
+        **3. Inspect the evidence**  
+        Review the ML score, structural signals, brand intelligence,
+        typosquatting results and the final threat assessment.
+
+        > **Tip:** Don't judge a URL only by its final score.
+        > The individual findings explain *why* the system reached
+        > its assessment.
+        """
+    )
+
+
+# ============================================================
+# SCANNER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🔎 URL Security Scanner</h2>
+        <p>
+            Paste a URL below or start with one of the examples.
         </p>
     </div>
     """,
@@ -976,64 +2162,53 @@ st.markdown(
 )
 
 
-# ============================================================
-# HOW IT WORKS
-# ============================================================
+# Demo buttons
+d1, d2, d3, d4 = st.columns(4)
 
-with st.expander("🧭 How to use PhishGuard", expanded=False):
+with d1:
+    if st.button(
+        "🟢 Safe Example",
+        use_container_width=True,
+    ):
+        st.session_state.url_input = "https://google.com"
+        st.rerun()
 
-    st.markdown(
-        """
-        ### Scan a URL in three steps
+with d2:
+    if st.button(
+        "🟡 Typosquat",
+        use_container_width=True,
+    ):
+        st.session_state.url_input = "https://paypa1.com"
+        st.rerun()
 
-        **1. Paste a URL**  
-        Enter the complete URL you want to analyze.
+with d3:
+    if st.button(
+        "🔴 Phishing",
+        use_container_width=True,
+    ):
+        st.session_state.url_input = (
+            "http://paypal-login-verify.com"
+        )
+        st.rerun()
 
-        **2. Run the security scan**  
-        PhishGuard evaluates the URL using multiple independent
-        detection layers.
+with d4:
+    if st.button(
+        "🧪 Obfuscated",
+        use_container_width=True,
+    ):
+        st.session_state.url_input = (
+            "http://paypal.com@evil-site.com/login"
+        )
+        st.rerun()
 
-        **3. Review the evidence**  
-        Don't rely only on the final score. Check the detected
-        structural indicators, suspicious keywords, brand
-        impersonation and possible typosquatting.
-
-        **Example URLs**
-        """
-    )
-
-    demo_urls = [
-        "https://google.com",
-        "https://github.com/login",
-        "https://goggle.com",
-        "https://paypa1.com",
-        "http://paypal-login-verify.com",
-        "http://192.168.1.100/login",
-    ]
-
-    for demo in demo_urls:
-        st.code(demo)
-
-
-# ============================================================
-# INPUT
-# ============================================================
-
-st.markdown(
-    """
-    <div class="section-header">
-        <h2>🔎 URL Security Scanner</h2>
-        <p>Paste a URL to generate a multi-layer threat assessment.</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
 url = st.text_input(
     "URL",
+    key="url_input",
     placeholder="https://example.com/login",
     label_visibility="collapsed",
 )
+
 
 scan = st.button(
     "🔍 Analyze URL",
@@ -1043,27 +2218,60 @@ scan = st.button(
 
 
 # ============================================================
-# ANALYSIS
+# NO SCAN STATE
 # ============================================================
 
-if scan:
+if not scan:
 
-    if not url.strip():
+    st.markdown(
+        """
+        <div class="empty-state">
+            <div class="empty-icon">🛡️</div>
+            <div class="empty-title">
+                Ready to inspect a URL
+            </div>
+            <div>
+                Enter a URL above and PhishGuard will generate
+                a multi-layer security assessment.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        st.warning(
-            "Please enter a URL before starting the scan."
-        )
-        st.stop()
+    st.stop()
 
-    url = url.strip()
 
-    # Automatically add scheme when omitted.
-    analysis_url = url
+# ============================================================
+# INPUT VALIDATION
+# ============================================================
 
-    if not analysis_url.lower().startswith(
-        ("http://", "https://")
-    ):
-        analysis_url = "https://" + analysis_url
+if not url.strip():
+
+    st.warning(
+        "Please enter a URL before starting the scan."
+    )
+
+    st.stop()
+
+
+url = url.strip()
+
+analysis_url = url
+
+if not analysis_url.lower().startswith(
+    ("http://", "https://")
+):
+    analysis_url = "https://" + analysis_url
+
+
+# ============================================================
+# RUN ANALYSIS
+# ============================================================
+
+with st.spinner(
+    "Running ML and security intelligence checks..."
+):
 
     try:
         result = analyze_url(analysis_url)
@@ -1073,487 +2281,615 @@ if scan:
         st.error(
             f"Unable to analyze this URL: {error}"
         )
+
         st.stop()
 
-    verdict = result["verdict"]
-    score = result["score"]
-    ml_score = result["ml_score"]
-    intelligence = result["intelligence_score"]
 
-    # ========================================================
-    # ASSESSMENT DESCRIPTION
-    # ========================================================
+# ============================================================
+# RESULT VARIABLES
+# ============================================================
 
-    if verdict == "Verified Low Risk":
+verdict = result["verdict"]
+score = result["score"]
+ml_score = result["ml_score"]
+intelligence = result["intelligence_score"]
 
-        description = (
-            "The domain matches a known official domain in "
-            "PhishGuard's brand verification list."
+trusted = result["trusted_domain"]
+brands = result["brand_impersonation"]
+typos = result["typosquatting"]
+keywords = result["suspicious_keywords"]
+findings = result["security_findings"]
+
+
+# ============================================================
+# DESCRIPTION
+# ============================================================
+
+if verdict == "Verified Low Risk":
+
+    description = (
+        "The domain matches a known official domain in "
+        "PhishGuard's curated verification list."
+    )
+
+elif verdict == "High Risk":
+
+    description = (
+        "Multiple signals indicate that this URL may represent "
+        "a phishing or deceptive destination."
+    )
+
+elif verdict == "Suspicious":
+
+    description = (
+        "The URL contains signals associated with potentially "
+        "deceptive or suspicious behavior."
+    )
+
+else:
+
+    description = (
+        "No strong phishing indicators were detected, but this "
+        "does not guarantee that the website is safe."
+    )
+
+
+# ============================================================
+# THREAT ASSESSMENT
+# ============================================================
+
+st.markdown(
+    f"""
+    <div class="assessment">
+
+        <div class="assessment-label">
+            Threat Assessment
+        </div>
+
+        <div class="assessment-verdict">
+            {verdict}
+        </div>
+
+        <div class="assessment-description">
+            {description}
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# SCORE CARDS
+# ============================================================
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Threat Score</div>
+            <div class="card-value">{score:.1f}/100</div>
+            <div class="card-sub">
+                Final fused assessment
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c2:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">ML Score</div>
+            <div class="card-value">{ml_score:.1f}%</div>
+            <div class="card-sub">
+                URL pattern probability
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c3:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Intelligence</div>
+            <div class="card-value">{intelligence}/100</div>
+            <div class="card-sub">
+                Security heuristics
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with c4:
+
+    domain_status = (
+        "Recognized"
+        if trusted
+        else "Unverified"
+    )
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Domain Status</div>
+            <div class="card-value">
+                {domain_status}
+            </div>
+            <div class="card-sub">
+                Brand verification layer
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# THREAT SCORE VISUAL
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>📊 Threat Level</h2>
+        <p>Visual representation of the final fused score.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.progress(
+    min(max(score / 100, 0.0), 1.0)
+)
+
+
+# ============================================================
+# SCANNED URL
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🌐 Scanned URL</h2>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    f"""
+    <div class="url-box">
+        {analysis_url}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# URL ANATOMY
+# ============================================================
+
+parsed = urlparse(analysis_url)
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🧩 URL Anatomy</h2>
+        <p>Breakdown of the submitted address.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+a1, a2, a3, a4 = st.columns(4)
+
+with a1:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Scheme</div>
+            <div class="card-value">
+                {parsed.scheme or "—"}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with a2:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Hostname</div>
+            <div class="card-value"
+                 style="font-size:1rem;word-break:break-all;">
+                {parsed.hostname or "—"}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with a3:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Path</div>
+            <div class="card-value"
+                 style="font-size:1rem;word-break:break-all;">
+                {parsed.path or "/"}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with a4:
+
+    st.markdown(
+        f"""
+        <div class="card">
+            <div class="card-title">Query</div>
+            <div class="card-value"
+                 style="font-size:1rem;word-break:break-all;">
+                {parsed.query or "—"}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# BRAND + TYPOSQUATTING
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🎯 Brand & Typosquatting Intelligence</h2>
+        <p>
+            Detects attempts to imitate known brands through
+            deceptive domains and character substitutions.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+b1, b2 = st.columns(2)
+
+with b1:
+
+    if brands:
+
+        st.markdown(
+            """
+            <div class="card">
+                <div class="card-title">
+                    Brand Impersonation
+                </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-    elif verdict == "High Risk":
+        for brand in brands:
 
-        description = (
-            "Multiple signals indicate that this URL may "
-            "represent a phishing or deceptive destination."
-        )
+            st.markdown(
+                f"""
+                <span class="pill">
+                    🚨 {brand}
+                </span>
+                """,
+                unsafe_allow_html=True,
+            )
 
-    elif verdict == "Suspicious":
-
-        description = (
-            "The URL contains signals associated with "
-            "potentially deceptive or suspicious behavior."
+        st.markdown(
+            "</div>",
+            unsafe_allow_html=True,
         )
 
     else:
 
-        description = (
-            "No strong phishing indicators were detected, "
-            "but this does not guarantee the website is safe."
+        st.markdown(
+            """
+            <div class="card">
+                <div class="card-title">
+                    Brand Impersonation
+                </div>
+
+                <div class="card-value">
+                    None detected
+                </div>
+
+                <div class="card-sub">
+                    No known brand was directly detected
+                    in the domain.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
-    # ========================================================
-    # THREAT ASSESSMENT
-    # ========================================================
+
+with b2:
+
+    if typos:
+
+        st.markdown(
+            """
+            <div class="card">
+                <div class="card-title">
+                    Possible Typosquatting
+                </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        for item in typos[:5]:
+
+            st.markdown(
+                f"""
+                <div style="margin-bottom:0.65rem;">
+                    <strong>
+                        ⚠️ {item['brand']}
+                    </strong>
+
+                    <span style="color:var(--subtle);">
+                        — "{item['domain']}"
+                        ({item['similarity']}% similarity)
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.markdown(
+            "</div>",
+            unsafe_allow_html=True,
+        )
+
+    else:
+
+        st.markdown(
+            """
+            <div class="card">
+                <div class="card-title">
+                    Possible Typosquatting
+                </div>
+
+                <div class="card-value">
+                    None detected
+                </div>
+
+                <div class="card-sub">
+                    No strong known-brand lookalike
+                    was identified.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+# ============================================================
+# SUSPICIOUS KEYWORDS
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🔑 Suspicious Keywords</h2>
+        <p>
+            Authentication, payment and account-related
+            language detected in the URL.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+if keywords:
+
+    pills = ""
+
+    for keyword in keywords:
+
+        pills += (
+            f'<span class="pill">'
+            f'⚠️ {keyword}'
+            f'</span>'
+        )
 
     st.markdown(
         f"""
-        <div class="assessment">
-            <div class="assessment-label">Threat Assessment</div>
-            <div class="assessment-verdict">{verdict}</div>
-            <div class="assessment-description">
+        <div class="card">
+            {pills}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+else:
+
+    st.markdown(
+        """
+        <div class="card">
+            <div class="card-value">
+                No suspicious keywords detected
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# ============================================================
+# STRUCTURAL ANALYSIS
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-header">
+        <h2>🔬 Structural Analysis</h2>
+        <p>
+            Signals identified directly from the URL structure.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+for icon, title, description in findings:
+
+    st.markdown(
+        f"""
+        <div class="finding">
+
+            <div class="finding-title">
+                {icon} {title}
+            </div>
+
+            <div class="finding-desc">
                 {description}
             </div>
+
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ========================================================
-    # SCORE CARDS
-    # ========================================================
 
-    c1, c2, c3, c4 = st.columns(4)
+# ============================================================
+# WHY THIS SCORE?
+# ============================================================
 
-    with c1:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Threat Score</div>
-                <div class="card-value">{score:.1f}/100</div>
-                <div class="card-sub">Final fused assessment</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c2:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">ML Score</div>
-                <div class="card-value">{ml_score:.1f}%</div>
-                <div class="card-sub">URL pattern probability</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c3:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Intelligence</div>
-                <div class="card-value">{intelligence}/100</div>
-                <div class="card-sub">Security heuristics</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with c4:
-
-        if result["trusted_domain"]:
-            domain_status = "Recognized"
-        else:
-            domain_status = "Unverified"
-
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Domain Status</div>
-                <div class="card-value">{domain_status}</div>
-                <div class="card-sub">Brand verification layer</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    # ========================================================
-    # URL
-    # ========================================================
+with st.expander(
+    "🧠 Why did PhishGuard give this score?"
+):
 
     st.markdown(
-        """
-        <div class="section-header">
-            <h2>🌐 Scanned URL</h2>
-        </div>
-        """,
-        unsafe_allow_html=True,
+        "### Detection reasoning"
     )
 
-    st.markdown(
-        f"""
-        <div class="url-box">{analysis_url}</div>
-        """,
-        unsafe_allow_html=True,
-    )
+    reasons = result["intelligence_reasons"]
 
-    # ========================================================
-    # URL ANATOMY
-    # ========================================================
+    if reasons:
 
-    parsed = urlparse(analysis_url)
-
-    st.markdown(
-        """
-        <div class="section-header">
-            <h2>🧩 URL Anatomy</h2>
-            <p>Breakdown of the submitted address.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    a1, a2, a3, a4 = st.columns(4)
-
-    with a1:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Scheme</div>
-                <div class="card-value">{parsed.scheme or "—"}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with a2:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Hostname</div>
-                <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
-                    {parsed.hostname or "—"}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with a3:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Path</div>
-                <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
-                    {parsed.path or "/"}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with a4:
-        st.markdown(
-            f"""
-            <div class="card">
-                <div class="card-title">Query</div>
-                <div class="card-value" style="font-size:1.05rem;word-break:break-all;">
-                    {parsed.query or "—"}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    # ========================================================
-    # BRAND INTELLIGENCE
-    # ========================================================
-
-    brands = result["brand_impersonation"]
-    typos = result["typosquatting"]
-
-    st.markdown(
-        """
-        <div class="section-header">
-            <h2>🎯 Brand & Typosquatting Intelligence</h2>
-            <p>
-                Detects attempts to imitate known brands through
-                deceptive domains and character substitutions.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    b1, b2 = st.columns(2)
-
-    with b1:
-
-        if brands:
-
+        for reason in reasons:
             st.markdown(
-                """
-                <div class="card">
-                    <div class="card-title">Brand Impersonation</div>
-                """,
-                unsafe_allow_html=True,
+                f"- **{reason}**"
             )
-
-            for brand in brands:
-                st.markdown(
-                    f'<span class="pill">🚨 {brand}</span>',
-                    unsafe_allow_html=True,
-                )
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        else:
-
-            st.markdown(
-                """
-                <div class="card">
-                    <div class="card-title">Brand Impersonation</div>
-                    <div class="card-value">None detected</div>
-                    <div class="card-sub">
-                        No known brand was directly detected in the domain.
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-    with b2:
-
-        if typos:
-
-            st.markdown(
-                """
-                <div class="card">
-                    <div class="card-title">Possible Typosquatting</div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            for item in typos[:5]:
-
-                st.markdown(
-                    f"""
-                    <div style="margin-bottom:0.65rem;">
-                        <strong>⚠️ {item['brand']}</strong>
-                        <span style="color:#8f9caf;">
-                            — "{item['domain']}"
-                            ({item['similarity']}% similarity)
-                        </span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        else:
-
-            st.markdown(
-                """
-                <div class="card">
-                    <div class="card-title">Possible Typosquatting</div>
-                    <div class="card-value">None detected</div>
-                    <div class="card-sub">
-                        No strong known-brand lookalike was identified.
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-    # ========================================================
-    # SUSPICIOUS KEYWORDS
-    # ========================================================
-
-    keywords = result["suspicious_keywords"]
-
-    st.markdown(
-        """
-        <div class="section-header">
-            <h2>🔑 Suspicious Keywords</h2>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    if keywords:
-
-        pills = ""
-
-        for keyword in keywords:
-            pills += (
-                f'<span class="pill">⚠️ {keyword}</span>'
-            )
-
-        st.markdown(
-            f"""
-            <div class="card">
-                {pills}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
     else:
 
         st.markdown(
-            """
-            <div class="card">
-                <div class="card-value">No suspicious keywords detected</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
+            "No additional deterministic intelligence signals."
         )
 
-    # ========================================================
-    # STRUCTURAL ANALYSIS
-    # ========================================================
-
-    findings = result["security_findings"]
+    st.divider()
 
     st.markdown(
         """
-        <div class="section-header">
-            <h2>🔬 Structural Analysis</h2>
-            <p>Signals identified from the URL structure itself.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
+        ### How the assessment works
+
+        **ML Pattern Model**  
+        A character-level TF-IDF + Logistic Regression
+        model learns suspicious URL patterns from the
+        training dataset.
+
+        **Security Intelligence**  
+        Handcrafted rules examine structural properties
+        such as IP addresses, excessive subdomains,
+        unusual numbers, suspicious keywords and
+        URL obfuscation.
+
+        **Brand Intelligence**  
+        The engine checks whether the domain resembles
+        or impersonates a known brand.
+
+        **Typosquatting Detection**  
+        Character similarity and leetspeak normalization
+        are used to identify common lookalike domains.
+
+        **Threat Fusion**  
+        These signals are combined into the final
+        threat assessment.
+        """
     )
 
-    for icon, title, description in findings:
 
-        st.markdown(
-            f"""
-            <div class="finding">
-                <div class="finding-title">
-                    {icon} {title}
-                </div>
-                <div class="finding-desc">
-                    {description}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+# ============================================================
+# LIMITATIONS
+# ============================================================
 
-    # ========================================================
-    # WHY THIS SCORE?
-    # ========================================================
-
-    with st.expander(
-        "🧠 Why did PhishGuard give this score?"
-    ):
-
-        st.markdown(
-            "### Detection reasoning"
-        )
-
-        reasons = result["intelligence_reasons"]
-
-        if reasons:
-
-            for reason in reasons:
-                st.markdown(
-                    f"- **{reason}**"
-                )
-
-        else:
-
-            st.markdown(
-                "No additional deterministic intelligence signals."
-            )
-
-        st.divider()
-
-        st.markdown(
-            """
-            **How the final assessment works**
-
-            PhishGuard combines several independent signals:
-
-            **ML Pattern Model**  
-            A character-level TF-IDF + Logistic Regression model
-            learns suspicious URL patterns from the training dataset.
-
-            **Security Intelligence**  
-            Handcrafted rules examine structural properties such as
-            IP addresses, excessive subdomains, unusual numbers,
-            suspicious keywords and URL obfuscation.
-
-            **Brand / Typosquatting Intelligence**  
-            The engine compares domains against a curated list of
-            known brands and checks for lookalike character patterns.
-
-            These signals are fused into the final threat assessment.
-            """
-        )
-
-    # ========================================================
-    # LIMITATIONS
-    # ========================================================
-
-    with st.expander(
-        "⚠️ Limitations & responsible use"
-    ):
-
-        st.markdown(
-            """
-            ### Important
-
-            PhishGuard is an **ML-based research and educational
-            security tool**, not a replacement for a commercial
-            threat-intelligence platform.
-
-            **What it can do**
-            - Detect learned URL patterns associated with phishing.
-            - Identify common structural red flags.
-            - Detect known-brand impersonation.
-            - Identify many common typosquatting techniques.
-            - Explain the signals contributing to its assessment.
-
-            **What it cannot guarantee**
-            - It does not verify whether a website is currently online.
-            - It does not inspect the website's HTML or JavaScript.
-            - It does not query live domain reputation databases.
-            - It does not guarantee that a "Low Risk" URL is safe.
-            - Novel phishing domains without recognizable signals may
-              evade detection.
-            - The trusted-domain layer only covers brands in its
-              curated verification list.
-
-            **Best practice:** treat the result as one security signal,
-            not as proof that a website is safe or malicious.
-            """
-        )
-
-    # ========================================================
-    # FOOTER
-    # ========================================================
+with st.expander(
+    "⚠️ Limitations & responsible use"
+):
 
     st.markdown(
         """
-        <div class="footer">
-            <strong>PhishGuard</strong> · AI-Assisted Phishing URL Detection<br>
-            Machine Learning · Security Heuristics · Brand Intelligence · Explainability
-        </div>
-        """,
-        unsafe_allow_html=True,
+        ### Important
+
+        PhishGuard is an **ML-based research and educational
+        security tool**, not a replacement for a commercial
+        threat-intelligence platform.
+
+        **What it can do**
+
+        - Detect learned URL patterns associated with phishing.
+        - Identify common structural red flags.
+        - Detect known-brand impersonation.
+        - Identify many common typosquatting techniques.
+        - Explain signals contributing to its assessment.
+
+        **What it cannot guarantee**
+
+        - It does not verify whether a website is currently online.
+        - It does not inspect the website's HTML or JavaScript.
+        - It does not query live domain reputation databases.
+        - A "Low Risk" result does not prove that a URL is safe.
+        - Novel phishing domains without recognizable signals may evade detection.
+        - The trusted-domain layer only covers brands in its curated list.
+
+        **Best practice:** treat PhishGuard as one security signal,
+        not as proof that a website is safe or malicious.
+        """
     )
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="footer">
+
+        <strong>PhishGuard</strong>
+        · AI-Assisted Phishing URL Detection
+
+        <br>
+
+        Machine Learning · Security Heuristics ·
+        Brand Intelligence · Explainability
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
